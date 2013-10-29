@@ -1,0 +1,18 @@
+PATH
+  remote: .
+  specs:
+    push_package (0.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minitest (4.7.0)
+    rake (10.0.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  minitest (~> 4.7.0)
+  push_package!
+  rake (~> 10.0.3)
