@@ -1,7 +1,8 @@
 require 'push_package/version'
 require 'json'
-require 'tempfile'
 require 'fileutils'
+require 'tmpdir'
+require 'openssl'
 
 class PushPackage
   class InvalidIconsetError < StandardError; end
@@ -57,6 +58,8 @@ class PushPackage
 
       `pushd #{dir}; zip -r #{output_path} ./; popd`
     end
+
+    File.open(output_path, 'r')
   end
 
   private

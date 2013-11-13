@@ -2,7 +2,19 @@
 Make implementing safari push notifications easier for ruby developers.
 
 ## Notes:
-This is not ready for use.
+
+```ruby
+def create
+  package = PushPackage.new(website_params, iconset_path, certificate)
+  package.save('path/to/save')
+  send_file 'path/to/save'
+end
+```
+
+```shell
+$> push_package --website-json=./website.json --iconset-path=~/project/iconset --output-dir=./ --certificate=./Certificate.p12
+   wrote: ./pushPackage.zip
+```
 
 ## Contributing
 

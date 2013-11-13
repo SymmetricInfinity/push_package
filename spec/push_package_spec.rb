@@ -1,11 +1,9 @@
 require 'spec_helper'
 require 'fileutils'
-require 'pry'
 
 describe PushPackage do
 
-  let(:fixture_path) { File.join(File.dirname(__FILE__), 'fixtures') }
-  let(:iconset_path) { File.join(fixture_path, 'iconset') }
+  let(:iconset_path) { fixture_path 'iconset' }
 
   let(:website_params) do
     {
@@ -29,7 +27,8 @@ describe PushPackage do
       'website.json' => '3eaed6475443b895a49e3a1220e547f2be90434a'
     }
   end
-  let(:certificate) { File.open(File.join(fixture_path, 'self-signed.p12')) }
+
+  let(:certificate) { File.open(fixture_path('self-signed.p12')) }
 
   describe 'the truth' do
     it 'should pass' do
@@ -64,10 +63,10 @@ describe PushPackage do
   end
 
   describe '#save' do
-    let(:output_file) { '/tmp/pushPackage.zip' }
+    let(:output_path) { '/tmp/pushPackage.zip' }
     let(:tmp_path) { '/tmp/pushPackage' }
     let(:extracted_package) do
-      `unzip #{output_file} -d #{tmp_path}`
+      `unzip #{output_path} -d #{tmp_path}`
       Dir.glob(tmp_path + '/**/*').map do |d|
         d.gsub(tmp_path + '/', '')
       end
@@ -76,16 +75,22 @@ describe PushPackage do
     let(:push_package) { PushPackage.new(website_params, iconset_path, certificate) }
 
     before do
-      push_package.save(output_file)
+      push_package.save(output_path)
     end
 
     after do
-      File.delete(output_file) if File.exist?(output_file)
+      File.delete(output_path) if File.exist?(output_path)
       FileUtils.rm_rf(tmp_path)
     end
 
     it 'should save to the file system' do
-      File.exist?(output_file).must_equal(true)
+      File.exist?(output_path).must_equal(true)
+    end
+
+    it 'should return the file handle' do
+      file = push_package.save(output_path)
+      file.must_be_instance_of File
+      File.exists?(file.path).must_equal true
     end
 
     it 'should be a zip file' do
@@ -123,12 +128,4 @@ describe PushPackage do
       ).must_equal true
     end
   end
-
-  #def create
-    #send_data PushPackage.new(website_params, iconset_path, certificate)
-  #end
-  #
-  #$> push_package --website-json=./website.json --iconset-path=~/project/iconset --output-dir=./
-  #  wrote: ./pushPackage.zip
-  #
 end
