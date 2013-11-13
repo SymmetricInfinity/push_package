@@ -4,9 +4,8 @@ require 'pry'
 
 describe PushPackage do
 
-  let(:iconset_path) do
-    File.join(File.dirname(__FILE__), 'fixtures', 'iconset')
-  end
+  let(:fixture_path) { File.join(File.dirname(__FILE__), 'fixtures') }
+  let(:iconset_path) { File.join(fixture_path, 'iconset') }
 
   let(:website_params) do
     {
@@ -30,6 +29,7 @@ describe PushPackage do
       'website.json' => '3eaed6475443b895a49e3a1220e547f2be90434a'
     }
   end
+  let(:certificate) { File.open(File.join(fixture_path, 'self-signed.p12')) }
 
   describe 'the truth' do
     it 'should pass' do
@@ -40,14 +40,26 @@ describe PushPackage do
   describe '.new' do
     it 'should check website_params' do
       lambda do
-        PushPackage.new({}, iconset_path)
+        PushPackage.new({}, iconset_path, certificate)
       end.must_raise(PushPackage::InvalidParameterError)
     end
 
     it 'must have a valid iconset' do
       lambda do
-        PushPackage.new(website_params, '/tmp')
+        PushPackage.new(website_params, '/tmp', certificate)
       end.must_raise(PushPackage::InvalidIconsetError)
+    end
+
+    it 'should support a certificate path' do
+      lambda do
+        PushPackage.new(website_params, iconset_path, nil)
+      end.must_raise(ArgumentError)
+    end
+
+    it 'should support certificate path' do
+      lambda do
+        PushPackage.new(website_params, iconset_path, '/some/file.p12')
+      end.must_raise(Errno::ENOENT)
     end
   end
 
@@ -61,8 +73,9 @@ describe PushPackage do
       end
     end
 
+    let(:push_package) { PushPackage.new(website_params, iconset_path, certificate) }
+
     before do
-      push_package = PushPackage.new(website_params, iconset_path)
       push_package.save(output_file)
     end
 
@@ -98,6 +111,16 @@ describe PushPackage do
 
     it 'should have a valid signature' do
       extracted_package.must_include('signature')
+      signature = File.read(tmp_path + '/signature')
+      p7 = OpenSSL::PKCS7.new(signature)
+      store = OpenSSL::X509::Store.new
+      store.add_cert(push_package.p12.certificate)
+      p7.verify(
+        [push_package.p12.certificate],
+         store,
+         File.read(tmp_path + '/manifest.json'),
+         OpenSSL::PKCS7::DETACHED
+      ).must_equal true
     end
   end
 
