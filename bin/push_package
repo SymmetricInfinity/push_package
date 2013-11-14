@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'optparse'
+require 'push_package'
+
+# $> push_package --website-json=./website.json --iconset=~/project/iconset --certificate=./Certificate.p12 --output-dir=./
+options = {}
+options_parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: push_package [options]'
+
+  opts.on('-w', '--website-json  required', 'The path to the file containing the website.json') do |opt|
+    options[:website_json_path] = opt
+  end
+
+  opts.on('-i', '--iconset-path  required', 'The path to the directory containing the iconset') do |opt|
+    options[:iconset_path] = opt
+  end
+
+  opts.on('-c', '--certificate   required', 'The path to the p12 file that will be used to sign the manifest.json') do |opt|
+    options[:certificate_path] = opt
+  end
+
+  opts.on('-o', '--output-dir    optional', 'The desired output path for the pushPackage.zip file') do |opt|
+    options[:output_directory] = opt
+  end
+end
+
+options_parser.parse!
+
+# check the required options
+[:website_json_path, :certificate_path].each do |opt|
+  unless File.file?(options[opt].to_s)
+    puts options_parser.help
+    exit 1
+  end
+end
+
+unless File.directory?(options[:iconset_path].to_s)
+  puts options_parser.help
+  exit 1
+end
+
+options[:output_directory] = `pwd`.strip unless options[:output_directory]
+
+website_params = JSON.load(File.open(options[:website_json_path], 'r'))
+
+packager = PushPackage.new(website_params, options[:iconset_path], options[:certificate_path])
+
+packager.save(options[:output_directory] + '/pushPackage.zip')
+
+
