@@ -305,8 +305,8 @@ section {
 }
 
 .side-con {
-  float: left;
-  padding: 2em 2em 2em 0;
+  float: right;
+  padding: 2em 0em 2em 2em;
   background-color: white;
 }
 
