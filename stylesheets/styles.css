@@ -30,7 +30,7 @@ body {
   font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	color: #232323;
-	background-color: #FBFAF7;
+	background-color: #fff;
 	margin: 0;
 	line-height: 1.8em;
 	-webkit-font-smoothing: antialiased;
@@ -139,16 +139,6 @@ hr {
 }
 
 /* Images */
-
-img {
-  position: relative;
-  margin: 0 auto;
-  max-width: 650px;
-  padding: 5px;
-  margin: 10px 0 32px 0;
-  border: 1px solid #ccc;
-}
-
 
 /* Code blocks */
 
@@ -312,6 +302,12 @@ section {
   width:650px;
   float:right;
   padding-bottom:50px;
+}
+
+.side-con {
+  float: left;
+  padding: 2em 2em 2em 0;
+  background-color: white;
 }
 
 
