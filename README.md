@@ -11,6 +11,10 @@ This gem provides a Ruby library and command line tool for creating a push packa
 * Signs package with required signature
 * Creates pushPackage.zip
 
+## Installation
+
+```gem install push_package```
+
 ## Notes:
 
 This gem depends on `zip` being in your shell's `PATH`
