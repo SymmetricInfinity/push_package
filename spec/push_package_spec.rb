@@ -92,6 +92,11 @@ describe PushPackage do
       File.exist?('./pushPackage.zip').must_equal true
       File.delete('./pushPackage.zip')
     end
+
+    it 'should save to a temporary path' do
+      file = push_package.save
+      File.exist?(file.path).must_equal true
+      File.delete(file.path)
     end
 
     it 'should return the file handle' do

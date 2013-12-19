@@ -2,6 +2,7 @@ require 'push_package/version'
 require 'json'
 require 'fileutils'
 require 'tmpdir'
+require 'tempfile'
 require 'openssl'
 
 class PushPackage
@@ -30,8 +31,16 @@ class PushPackage
     @p12 = OpenSSL::PKCS12.new(cert_data, password)
   end
 
-  def save(output_path)
-    output_path = File.expand_path(output_path)
+  def save(output_path = nil)
+
+    if output_path
+      output_path = File.expand_path(output_path)
+    else
+      tempfile = Tempfile.new('pushPackage')
+      output_path = tempfile.path
+      tempfile.close
+    end
+
     Dir.mktmpdir('pushPackage') do |dir|
       json = File.open(dir + '/website.json', 'w+')
       json.write(JSON.dump(@website_params))
