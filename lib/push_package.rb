@@ -4,6 +4,7 @@ require 'fileutils'
 require 'tmpdir'
 require 'tempfile'
 require 'openssl'
+require 'zip'
 
 class PushPackage
   class InvalidIconsetError < StandardError; end
@@ -42,25 +43,19 @@ class PushPackage
     end
 
     Dir.mktmpdir('pushPackage') do |dir|
-      json = File.open(dir + '/website.json', 'w+')
-      json.write(JSON.dump(@website_params))
-      json.close
+      @dir = dir
+      File.open(dir + '/website.json', 'w+') do |json|
+        json.write(JSON.dump(@website_params))
+      end
 
       Dir.mkdir(File.join(dir,'icon.iconset'))
       Dir.glob(@iconset_path + '/*.png').each do |icon|
         FileUtils.cp(icon, dir + '/icon.iconset/')
       end
 
-      manifest_keys = REQUIRED_ICONSET_FILES.map{|f| 'icon.iconset/' + f }
-      manifest_keys << 'website.json'
-      manifest_values = manifest_keys.map {|file| Digest::SHA1.file(File.join(dir, file)).hexdigest }
-      manifest_data = Hash[manifest_keys.zip(manifest_values)].to_json
       File.open(dir + '/manifest.json', 'w+') do |manifest|
         manifest.write(manifest_data)
       end
-
-      #use the certificate to create a pkcs7 detached signature
-      signature = OpenSSL::PKCS7::sign(@p12.certificate, @p12.key, manifest_data, [], OpenSSL::PKCS7::BINARY | OpenSSL::PKCS7::DETACHED)
 
       File.open(dir + '/signature', 'wb+') do |file|
         file << signature.to_der
@@ -70,6 +65,18 @@ class PushPackage
     end
 
     File.open(output_path, 'r')
+  end
+
+  def signature
+    #use the certificate to create a pkcs7 detached signature
+    OpenSSL::PKCS7::sign(@p12.certificate, @p12.key, manifest_data, [], OpenSSL::PKCS7::BINARY | OpenSSL::PKCS7::DETACHED)
+  end
+
+  def manifest_data
+    manifest_keys = REQUIRED_ICONSET_FILES.map{|f| 'icon.iconset/' + f }
+    manifest_keys << 'website.json'
+    manifest_values = manifest_keys.map {|file| Digest::SHA1.file(File.join(@dir, file)).hexdigest }
+    Hash[manifest_keys.zip(manifest_values)].to_json
   end
 
   private
