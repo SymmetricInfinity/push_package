@@ -34,52 +34,63 @@ class PushPackage
 
   def save(output_path = nil)
 
+    @working_dir = Dir.mktmpdir('pushPackage')
+
     if output_path
       output_path = File.expand_path(output_path)
     else
-      tempfile = Tempfile.new('pushPackage')
-      output_path = tempfile.path
-      tempfile.close
+      output_path = Dir.tmpdir + '/pushPackage.zip'
     end
 
-    Dir.mktmpdir('pushPackage') do |dir|
-      @dir = dir
-      File.open(dir + '/website.json', 'w+') do |json|
-        json.write(JSON.dump(@website_params))
-      end
+    ## overwrite existing push packages
+    File.delete(output_path) if File.exists?(output_path)
 
-      Dir.mkdir(File.join(dir,'icon.iconset'))
-      Dir.glob(@iconset_path + '/*.png').each do |icon|
-        FileUtils.cp(icon, dir + '/icon.iconset/')
-      end
+    zip = Zip::File.open(output_path, Zip::File::CREATE)
 
-      File.open(dir + '/manifest.json', 'w+') do |manifest|
-        manifest.write(manifest_data)
-      end
-
-      File.open(dir + '/signature', 'wb+') do |file|
-        file << signature.to_der
-      end
-
-      `pushd #{dir}; zip -r #{output_path} ./; popd`
+    File.open(@working_dir + '/website.json', 'w+') do |json|
+      json.write(JSON.dump(@website_params))
     end
 
+    Dir.mkdir(File.join(@working_dir,'icon.iconset'))
+    Dir.glob(@iconset_path + '/*.png').each do |icon|
+      FileUtils.cp(icon, @working_dir + '/icon.iconset/')
+    end
+
+    File.open(@working_dir + '/manifest.json', 'w+') do |manifest|
+      manifest.write(manifest_data)
+    end
+
+    File.open(@working_dir + '/signature', 'wb+') do |file|
+      file.write(signature.to_der)
+    end
+
+    Dir.glob(@working_dir + '/**/*').each do |file|
+      next if File.directory?(file)
+      zip.add(file.gsub("#{@working_dir}/", ''), file)
+    end
+
+    zip.close
+
+    #clean up the temporary directory
+    FileUtils.remove_entry_secure(@working_dir)
+
+    #re-open the file for reading
     File.open(output_path, 'r')
   end
 
-  def signature
-    #use the certificate to create a pkcs7 detached signature
-    OpenSSL::PKCS7::sign(@p12.certificate, @p12.key, manifest_data, [], OpenSSL::PKCS7::BINARY | OpenSSL::PKCS7::DETACHED)
-  end
-
-  def manifest_data
-    manifest_keys = REQUIRED_ICONSET_FILES.map{|f| 'icon.iconset/' + f }
-    manifest_keys << 'website.json'
-    manifest_values = manifest_keys.map {|file| Digest::SHA1.file(File.join(@dir, file)).hexdigest }
-    Hash[manifest_keys.zip(manifest_values)].to_json
-  end
-
   private
+
+    def signature
+      #use the certificate to create a pkcs7 detached signature
+      OpenSSL::PKCS7::sign(@p12.certificate, @p12.key, manifest_data, [], OpenSSL::PKCS7::BINARY | OpenSSL::PKCS7::DETACHED)
+    end
+
+    def manifest_data
+      manifest_keys = REQUIRED_ICONSET_FILES.map{|f| 'icon.iconset/' + f }
+      manifest_keys << 'website.json'
+      manifest_values = manifest_keys.map {|file| Digest::SHA1.file(File.join(@working_dir, file)).hexdigest }
+      Hash[manifest_keys.zip(manifest_values)].to_json
+    end
 
     def valid_website_params?(params)
       REQUIRED_WEBSITE_PARAMS.all? do |param|
