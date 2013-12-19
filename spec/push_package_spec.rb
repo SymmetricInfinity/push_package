@@ -84,7 +84,14 @@ describe PushPackage do
     end
 
     it 'should save to the file system' do
-      File.exist?(output_path).must_equal(true)
+      File.exist?(output_path).must_equal true
+    end
+
+    it 'should save with a relative path' do
+      push_package.save('pushPackage.zip')
+      File.exist?('./pushPackage.zip').must_equal true
+      File.delete('./pushPackage.zip')
+    end
     end
 
     it 'should return the file handle' do

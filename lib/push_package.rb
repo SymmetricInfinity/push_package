@@ -31,6 +31,7 @@ class PushPackage
   end
 
   def save(output_path)
+    output_path = File.expand_path(output_path)
     Dir.mktmpdir('pushPackage') do |dir|
       json = File.open(dir + '/website.json', 'w+')
       json.write(JSON.dump(@website_params))
