@@ -29,6 +29,11 @@ class PushPackage
     else
       cert_data = File.read(certificate)
     end
+
+    if defined?(JRUBY_VERSION)
+      #ensure binary data for jruby.
+      cert_data.force_encoding(Encoding::ASCII_8BIT)
+    end
     @p12 = OpenSSL::PKCS12.new(cert_data, password)
   end
 

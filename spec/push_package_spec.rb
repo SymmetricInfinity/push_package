@@ -39,13 +39,13 @@ describe PushPackage do
   describe '.new' do
     it 'should check website_params' do
       lambda do
-        PushPackage.new({}, iconset_path, certificate)
+        PushPackage.new({}, iconset_path, certificate, 'testing')
       end.must_raise(PushPackage::InvalidParameterError)
     end
 
     it 'must have a valid iconset' do
       lambda do
-        PushPackage.new(website_params, '/tmp', certificate)
+        PushPackage.new(website_params, '/tmp', certificate, 'testing')
       end.must_raise(PushPackage::InvalidIconsetError)
     end
 
@@ -72,7 +72,7 @@ describe PushPackage do
       end
     end
 
-    let(:push_package) { PushPackage.new(website_params, iconset_path, certificate) }
+    let(:push_package) { PushPackage.new(website_params, iconset_path, certificate, 'testing') }
 
     before do
       push_package.save(output_path)
