@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    push_package (0.1.0)
+    push_package (0.1.1)
       rubyzip (~> 1.1.0)
 
 GEM
@@ -19,6 +19,7 @@ GEM
     slop (3.4.6)
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES

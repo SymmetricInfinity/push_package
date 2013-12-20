@@ -5,7 +5,7 @@ require 'push_package/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "push_package"
-  gem.version       = PushPackage::VERSION
+  gem.version       = PushPackage::VERSION.dup
   gem.authors       = ["Stefan Natchev", "Adam Duke"]
   gem.email         = ["stefan.natchev@gmail.com", "adam.v.duke@gmail.com"]
   gem.summary       = %q{A gem for creating Safari push notification push packages.}
