@@ -17,8 +17,6 @@ This gem provides a Ruby library and command line tool for creating a push packa
 
 ## Notes:
 
-This gem depends on `zip` being in your shell's `PATH`
-
 You must obtain a Website Push certificate from apple which requires a iOS developer license or a Mac developer license
 
 ```ruby
