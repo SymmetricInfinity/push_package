@@ -1,5 +1,7 @@
 # Push Package
 
+Build Status: [![Build Status](https://travis-ci.org/SymmetricInfinity/push_package.png?branch=master)](https://travis-ci.org/SymmetricInfinity/push_package)
+
 ## Purpose
 
 This gem provides a Ruby library and command line tool for creating a push package to be used for [Safari Push Notifications](https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NotificationProgrammingGuideForWebsites/PushNotifications/PushNotifications.html#//apple_ref/doc/uid/TP40013225-CH3-SW24).
