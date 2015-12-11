@@ -25,12 +25,12 @@ You must obtain a Website Push certificate from apple which requires a iOS devel
 require 'push_package'
 
 website_params = {
-  websiteName: "Bay Airlines",
-  websitePushID: "web.com.example.domain",
-  allowedDomains: ["http://domain.example.com"],
-  urlFormatString: "http://domain.example.com/%@/?flight=%@",
-  authenticationToken: "19f8d7a6e9fb8a7f6d9330dabe",
-  webServiceURL: "https://example.com/push"
+  'websiteName' => "Bay Airlines",
+  'websitePushID' => "web.com.example.domain",
+  'allowedDomains' => ["http://domain.example.com"],
+  'urlFormatString' => "http://domain.example.com/%@/?flight=%@",
+  'authenticationToken' => "19f8d7a6e9fb8a7f6d9330dabe",
+  'webServiceURL' => "https://example.com/push"
 }
 
 iconset_path = 'path/to/iconset'
