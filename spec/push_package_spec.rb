@@ -7,12 +7,23 @@ describe PushPackage do
 
   let(:website_params) do
     {
-      'websiteName' =>  'Push Package Test',
-      'websitePushID' =>  'web.com.symmetricinfinity.push_package',
-      'allowedDomains' =>  ['http://symmetricinfinity.com/push_package/', 'http://lvh.me'],
-      'urlFormatString' =>  'http://symmetricinfinity.com/push_package/?%@=%@',
-      'authenticationToken' =>  'nr2o1spn515949r5q54so22o8rq95575',
-      'webServiceURL' =>  'https://api.zeropush.com/safari'
+      'websiteName' => 'Push Package Test',
+      'websitePushID' => 'web.com.symmetricinfinity.push_package',
+      'allowedDomains' => ['http://symmetricinfinity.com/push_package/', 'http://lvh.me'],
+      'urlFormatString' => 'http://symmetricinfinity.com/push_package/?%@=%@',
+      'authenticationToken' => 'nr2o1spn515949r5q54so22o8rq95575',
+      'webServiceURL' => 'https://api.zeropush.com/safari'
+    }
+  end
+
+  let(:website_params_symbol_keys) do
+    {
+      websiteName: 'Push Package Test',
+      websitePushID: 'web.com.symmetricinfinity.push_package',
+      allowedDomains: ['http://symmetricinfinity.com/push_package/', 'http://lvh.me'],
+      urlFormatString: 'http://symmetricinfinity.com/push_package/?%@=%@',
+      authenticationToken: 'nr2o1spn515949r5q54so22o8rq95575',
+      webServiceURL: 'https://api.zeropush.com/safari'
     }
   end
 
@@ -43,22 +54,45 @@ describe PushPackage do
       end.must_raise(PushPackage::InvalidParameterError)
     end
 
-    it 'must have a valid iconset' do
-      lambda do
-        PushPackage.new(website_params, '/tmp', certificate, 'testing')
-      end.must_raise(PushPackage::InvalidIconsetError)
+    describe 'website params with string keys' do
+
+      it 'must have a valid iconset' do
+        lambda do
+          PushPackage.new(website_params, '/tmp', certificate, 'testing')
+        end.must_raise(PushPackage::InvalidIconsetError)
+      end
+
+      it 'should support a certificate path' do
+        lambda do
+          PushPackage.new(website_params, iconset_path, nil)
+        end.must_raise(ArgumentError)
+      end
+
+      it 'should support certificate path' do
+        lambda do
+          PushPackage.new(website_params, iconset_path, '/some/file.p12')
+        end.must_raise(Errno::ENOENT)
+      end
     end
 
-    it 'should support a certificate path' do
-      lambda do
-        PushPackage.new(website_params, iconset_path, nil)
-      end.must_raise(ArgumentError)
-    end
+    describe 'website params with string keys' do
+      it 'must have a valid iconset' do
+        lambda do
+          PushPackage.new(website_params_symbol_keys, '/tmp', certificate, 'testing')
+        end.must_raise(PushPackage::InvalidIconsetError)
+      end
 
-    it 'should support certificate path' do
-      lambda do
-        PushPackage.new(website_params, iconset_path, '/some/file.p12')
-      end.must_raise(Errno::ENOENT)
+      it 'should support a certificate path' do
+        lambda do
+          PushPackage.new(website_params_symbol_keys, iconset_path, nil)
+        end.must_raise(ArgumentError)
+      end
+
+      it 'should support certificate path' do
+        lambda do
+          PushPackage.new(website_params_symbol_keys, iconset_path, '/some/file.p12')
+        end.must_raise(Errno::ENOENT)
+      end
     end
   end
 

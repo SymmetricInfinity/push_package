@@ -98,8 +98,8 @@ class PushPackage
     end
 
     def valid_website_params?(params)
-      REQUIRED_WEBSITE_PARAMS.all? do |param|
-        params.keys.include?(param)
+      REQUIRED_WEBSITE_PARAMS.all? do |required_param|
+        params.keys.map(&:to_s).include?(required_param)
       end
     end
 
