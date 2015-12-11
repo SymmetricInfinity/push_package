@@ -45,6 +45,36 @@ $> push_package --website-json=./website.json --iconset-path=~/project/iconset -
    wrote: ./pushPackage.zip
 ```
 
+## Development/Test Certificates
+
+```shell
+# verify the localhost.crt
+openssl verify spec/fixtures/localhost.crt
+
+# verify the localhost.csr
+openssl req -text -noout -verify -in spec/fixtures/localhost.csr
+
+# verify the localhost.key
+openssl rsa -in spec/fixtures/localhost.key -check -noout
+
+# print information about the certificate to STDOUT
+openssl x509 -in spec/fixtures/localhost.crt -text -noout
+
+# generate a new rsa key
+openssl genrsa -out spec/fixtures/localhost.key 2048
+
+# generate a new csr from using an existing key
+openssl req -new -sha256 -key spec/fixtures/localhost.key -out spec/fixtures/localhost.csr
+
+# generate a new certificate using an existing csr and private key
+openssl x509 -req -days 3650 -in spec/fixtures/localhost.csr -signkey spec/fixtures/localhost.key -out spec/fixtures/localhost.crt
+
+# export the certificate as a p12
+# make sure to set the passphrase to 'testing' because the specs depend on it
+openssl pkcs12 -export -out spec/fixtures/self-signed.p12 -inkey spec/fixtures/localhost.key -in spec/fixtures/localhost.crt
+
+```
+
 ## Contributing
 
 1. Fork it
