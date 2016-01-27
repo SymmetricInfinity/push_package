@@ -73,6 +73,12 @@ describe PushPackage do
           PushPackage.new(website_params, iconset_path, '/some/file.p12')
         end.must_raise(Errno::ENOENT)
       end
+
+      it 'should support intermediate_cert path' do
+        lambda do
+          PushPackage.new(website_params, iconset_path, certificate, 'testing', '/some/file.crt')
+        end.must_raise(Errno::ENOENT)
+      end
     end
 
     describe 'website params with string keys' do
@@ -91,6 +97,12 @@ describe PushPackage do
       it 'should support certificate path' do
         lambda do
           PushPackage.new(website_params_symbol_keys, iconset_path, '/some/file.p12')
+        end.must_raise(Errno::ENOENT)
+      end
+
+      it 'should support intermediate_cert path' do
+        lambda do
+          PushPackage.new(website_params_symbol_keys, iconset_path, certificate, 'testing', '/some/file.crt')
         end.must_raise(Errno::ENOENT)
       end
     end
@@ -172,6 +184,25 @@ describe PushPackage do
          File.read(tmp_path + '/manifest.json'),
          OpenSSL::PKCS7::DETACHED
       ).must_equal true
+    end
+
+    it 'should have no extra certs in signature' do
+      extracted_package.must_include('signature')
+      signature = File.read(tmp_path + '/signature')
+      p7 = OpenSSL::PKCS7.new(signature)
+      p7.certificates().size.must_equal 1
+    end
+
+    describe 'when intermediate_cert given' do
+      let(:intermediate_cert) { File.open(fixture_path('intermediate.crt')) }
+      let(:push_package) { PushPackage.new(website_params, iconset_path, certificate, 'testing', intermediate_cert) }
+
+      it 'should have one extra cert in signature' do
+        extracted_package.must_include('signature')
+        signature = File.read(tmp_path + '/signature')
+        p7 = OpenSSL::PKCS7.new(signature)
+        p7.certificates().size.must_equal 2
+      end
     end
   end
 end
