@@ -21,6 +21,9 @@ This gem provides a Ruby library and command line tool for creating a push packa
 
 You must obtain a Website Push certificate from apple which requires a iOS developer license or a Mac developer license
 
+[Starting February 2016](https://developer.apple.com/support/certificates/expiration/), you will also need a copy of the
+Apple intermediate cert ([WWDR Certificate, expiring 02/07/23](https://developer.apple.com/certificationauthority/AppleWWDRCA.cer))
+
 ```ruby
 require 'push_package'
 
@@ -35,7 +38,8 @@ website_params = {
 
 iconset_path = 'path/to/iconset'
 certificate = 'path/to/certificate.p12' # or certificate_string
-package = PushPackage.new(website_params, iconset_path, certificate, 'optional cert password')
+intermediate_cert = 'path/to/AppleWWDRCA.cer'
+package = PushPackage.new(website_params, iconset_path, certificate, 'optional cert password', intermediate_cert)
 package.save('path/to/save')
 
 ```
