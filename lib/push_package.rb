@@ -14,9 +14,8 @@ class PushPackage
   REQUIRED_ICONSET_FILES  = ["icon_16x16.png", "icon_16x16@2x.png", "icon_32x32.png", "icon_32x32@2x.png", "icon_128x128.png", "icon_128x128@2x.png" ]
 
   attr_reader :p12
-  attr_reader :extra_certs_x509
 
-  def initialize(website_params, iconset_path, certificate, password = nil, extra_certificate = nil)
+  def initialize(website_params, iconset_path, certificate, password = nil, intermediate_cert = nil)
     raise InvalidParameterError unless valid_website_params?(website_params)
     raise InvalidIconsetError unless valid_iconset?(iconset_path)
     raise ArgumentError unless certificate
@@ -37,9 +36,9 @@ class PushPackage
     end
     @p12 = OpenSSL::PKCS12.new(cert_data, password)
 
-    if extra_certificate
-      extra_cert_data = File.read(extra_certificate)
-      @extra_certs_x509 = [OpenSSL::X509::Certificate.new(extra_cert_data)]
+    if intermediate_cert
+      intermediate_cert_data = File.read(intermediate_cert)
+      @extra_certs = [OpenSSL::X509::Certificate.new(intermediate_cert_data)]
     end
   end
 
@@ -93,7 +92,7 @@ class PushPackage
 
     def signature
       #use the certificate to create a pkcs7 detached signature
-      OpenSSL::PKCS7::sign(@p12.certificate, @p12.key, manifest_data, @extra_certs_x509, OpenSSL::PKCS7::BINARY | OpenSSL::PKCS7::DETACHED)
+      OpenSSL::PKCS7::sign(@p12.certificate, @p12.key, manifest_data, @extra_certs, OpenSSL::PKCS7::BINARY | OpenSSL::PKCS7::DETACHED)
     end
 
     def manifest_data
