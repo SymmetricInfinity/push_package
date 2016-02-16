@@ -17,11 +17,19 @@ options_parser = OptionParser.new do |opts|
     options[:iconset_path] = opt
   end
 
-  opts.on('-c', '--certificate   required', 'The path to the p12 file that will be used to sign the manifest.json') do |opt|
+  opts.on('-c', '--certificate  required', 'The path to the p12 file that will be used to sign the manifest.json') do |opt|
     options[:certificate_path] = opt
   end
 
-  opts.on('-o', '--output-dir    optional', 'The desired output path for the pushPackage.zip file') do |opt|
+  opts.on('-p', '--password  optional', 'The password to read the p12 file') do |opt|
+    options[:password] = opt
+  end
+
+  opts.on('-I', '--intermediate-certificate  optional', 'The path to the Apple WWDR Intermediate Certificate used to sign the manifest.json') do |opt|
+    options[:intermediate_certificate_path] = opt
+  end
+
+  opts.on('-o', '--output-dir  optional', 'The desired output path for the pushPackage.zip file') do |opt|
     options[:output_directory] = opt
   end
 end
@@ -45,7 +53,7 @@ options[:output_directory] = `pwd`.strip unless options[:output_directory]
 
 website_params = JSON.load(File.open(options[:website_json_path], 'r'))
 
-packager = PushPackage.new(website_params, options[:iconset_path], options[:certificate_path])
+packager = PushPackage.new(website_params, options[:iconset_path], options[:certificate_path], options[:password], options[:intermediate_certificate_path])
 
 packager.save(options[:output_directory] + '/pushPackage.zip')
 
