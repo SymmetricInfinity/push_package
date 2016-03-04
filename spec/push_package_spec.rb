@@ -145,6 +145,14 @@ describe PushPackage do
       File.delete(file.path)
     end
 
+    it 'supports using a Pathname for iconset_path' do
+      iconset_pathname = Pathname.new(iconset_path)
+      push_package = PushPackage.new(website_params, iconset_pathname, certificate, 'testing')
+      file = push_package.save
+      File.exist?(file.path).must_equal true
+      File.delete(file.path)
+    end
+
     it 'should return the file handle' do
       file = push_package.save(output_path)
       file.must_be_instance_of File
@@ -194,14 +202,27 @@ describe PushPackage do
     end
 
     describe 'when intermediate_cert given' do
-      let(:intermediate_cert) { File.open(fixture_path('intermediate.crt')) }
-      let(:push_package) { PushPackage.new(website_params, iconset_path, certificate, 'testing', intermediate_cert) }
+      describe 'when intermediate_cert is a string' do
+        let(:intermediate_cert) { fixture_path('intermediate.crt') }
+        let(:push_package) { PushPackage.new(website_params, iconset_path, certificate, 'testing', intermediate_cert) }
 
-      it 'should have one extra cert in signature' do
-        extracted_package.must_include('signature')
-        signature = File.read(tmp_path + '/signature')
-        p7 = OpenSSL::PKCS7.new(signature)
-        p7.certificates().size.must_equal 2
+        it 'should have one extra cert in signature' do
+          extracted_package.must_include('signature')
+          signature = File.read(tmp_path + '/signature')
+          p7 = OpenSSL::PKCS7.new(signature)
+          p7.certificates().size.must_equal 2
+        end
+      end
+      describe 'when intermediate_cert is a Pathname' do
+        let(:intermediate_cert) { Pathname.new(fixture_path('intermediate.crt')) }
+        let(:push_package) { PushPackage.new(website_params, iconset_path, certificate, 'testing', intermediate_cert) }
+
+        it 'should have one extra cert in signature' do
+          extracted_package.must_include('signature')
+          signature = File.read(tmp_path + '/signature')
+          p7 = OpenSSL::PKCS7.new(signature)
+          p7.certificates().size.must_equal 2
+        end
       end
     end
   end

@@ -21,7 +21,7 @@ class PushPackage
     raise ArgumentError unless certificate
 
     @website_params = website_params
-    @iconset_path = iconset_path
+    @iconset_path = iconset_path.to_s
 
     if certificate.respond_to?(:read)
       cert_data = certificate.read
