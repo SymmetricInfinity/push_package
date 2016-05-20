@@ -185,13 +185,31 @@ describe PushPackage do
       signature = File.read(tmp_path + '/signature')
       p7 = OpenSSL::PKCS7.new(signature)
       store = OpenSSL::X509::Store.new
-      store.add_cert(push_package.p12.certificate)
+      store.add_cert(push_package.certificate)
       p7.verify(
-        [push_package.p12.certificate],
+        [push_package.certificate],
          store,
          File.read(tmp_path + '/manifest.json'),
          OpenSSL::PKCS7::DETACHED
       ).must_equal true
+    end
+
+    describe 'when using a pem file' do
+      let(:certificate) { File.open(fixture_path('self-signed.pem')) }
+
+      it 'should have a valid signature' do
+        extracted_package.must_include('signature')
+        signature = File.read(tmp_path + '/signature')
+        p7 = OpenSSL::PKCS7.new(signature)
+        store = OpenSSL::X509::Store.new
+        store.add_cert(push_package.certificate)
+        p7.verify(
+          [push_package.certificate],
+          store,
+          File.read(tmp_path + '/manifest.json'),
+          OpenSSL::PKCS7::DETACHED
+        ).must_equal true
+      end
     end
 
     it 'should have no extra certs in signature' do

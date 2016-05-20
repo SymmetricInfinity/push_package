@@ -13,7 +13,7 @@ class PushPackage
   REQUIRED_WEBSITE_PARAMS = ["websiteName", "websitePushID", "allowedDomains", "urlFormatString", "authenticationToken", "webServiceURL"]
   REQUIRED_ICONSET_FILES  = ["icon_16x16.png", "icon_16x16@2x.png", "icon_32x32.png", "icon_32x32@2x.png", "icon_128x128.png", "icon_128x128@2x.png" ]
 
-  attr_reader :p12
+  attr_reader :certificate, :pkey
 
   def initialize(website_params, iconset_path, certificate, password = nil, intermediate_cert = nil)
     raise InvalidParameterError unless valid_website_params?(website_params)
@@ -34,7 +34,14 @@ class PushPackage
       #ensure binary data for jruby.
       cert_data.force_encoding(Encoding::ASCII_8BIT)
     end
-    @p12 = OpenSSL::PKCS12.new(cert_data, password)
+    if pem?(cert_data)
+      @certificate = OpenSSL::X509::Certificate.new(cert_data)
+      @pkey = OpenSSL::PKey::RSA.new(cert_data)
+    else
+      p12 = OpenSSL::PKCS12.new(cert_data, password)
+      @certificate = p12.certificate
+      @pkey = p12.key
+    end
 
     if intermediate_cert
       intermediate_cert_data = File.read(intermediate_cert)
@@ -92,7 +99,15 @@ class PushPackage
 
     def signature
       #use the certificate to create a pkcs7 detached signature
-      OpenSSL::PKCS7::sign(@p12.certificate, @p12.key, manifest_data, @extra_certs, OpenSSL::PKCS7::BINARY | OpenSSL::PKCS7::DETACHED)
+      OpenSSL::PKCS7::sign(@certificate, @pkey, manifest_data, @extra_certs, OpenSSL::PKCS7::BINARY | OpenSSL::PKCS7::DETACHED)
+    end
+
+    def pem?(cert_data)
+      begin
+        cert_data =~ /BEGIN CERTIFICATE/ && cert_data =~ /PRIVATE KEY/
+      rescue
+        false
+      end
     end
 
     def manifest_data
