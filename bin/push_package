@@ -4,7 +4,7 @@ require 'json'
 require 'optparse'
 require 'push_package'
 
-# $> push_package --website-json=./website.json --iconset=~/project/iconset --certificate=./Certificate.p12 --output-dir=./
+# $> push_package --website-json=./website.json --iconset-path=/path/to/project/iconset --certificate=./Certificate.p12 --output-dir=./
 options = {}
 options_parser = OptionParser.new do |opts|
   opts.banner = 'Usage: push_package [options]'

@@ -45,7 +45,7 @@ package.save('path/to/save')
 ```
 
 ```shell
-$> push_package --website-json=./website.json --iconset-path=~/project/iconset --output-dir=./ --certificate=./Certificate.p12
+$> push_package --website-json=./website.json --iconset-path=/path/to/project/iconset --output-dir=./ --certificate=./Certificate.p12
    wrote: ./pushPackage.zip
 ```
 
