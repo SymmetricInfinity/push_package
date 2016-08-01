@@ -38,13 +38,19 @@ options_parser.parse!
 
 # check the required options
 [:website_json_path, :certificate_path].each do |opt|
-  unless File.file?(options[opt].to_s)
+  path = File.expand_path(options[opt].to_s)
+  unless File.file?(path)
+    puts "#{path}: No such file"
+    puts
     puts options_parser.help
     exit 1
   end
 end
 
-unless File.directory?(options[:iconset_path].to_s)
+iconset_path = File.expand_path(options[:iconset_path].to_s)
+unless File.directory?(iconset_path)
+  puts "#{iconset_path}: No such directory"
+  puts
   puts options_parser.help
   exit 1
 end
