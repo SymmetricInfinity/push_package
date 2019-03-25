@@ -27,7 +27,7 @@ class PushPackage
       cert_data = certificate.read
       certificate.rewind if certificate.respond_to?(:rewind)
     else
-      cert_data = File.read(certificate)
+      cert_data = File.binread(certificate)
     end
 
     if defined?(JRUBY_VERSION)
@@ -44,7 +44,7 @@ class PushPackage
     end
 
     if intermediate_cert
-      intermediate_cert_data = File.read(intermediate_cert)
+      intermediate_cert_data = File.binread(intermediate_cert)
       @extra_certs = [OpenSSL::X509::Certificate.new(intermediate_cert_data)]
     end
   end
