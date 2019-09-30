@@ -22,6 +22,7 @@ class PushPackage
 
     @website_params = website_params
     @iconset_path = iconset_path.to_s
+    @extra_certs = nil
 
     if certificate.respond_to?(:read)
       cert_data = certificate.read
@@ -60,7 +61,7 @@ class PushPackage
     end
 
     ## overwrite existing push packages
-    File.delete(output_path) if File.exists?(output_path)
+    File.delete(output_path) if File.exist?(output_path)
 
     zip = Zip::File.open(output_path, Zip::File::CREATE)
 

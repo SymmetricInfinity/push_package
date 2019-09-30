@@ -156,7 +156,7 @@ describe PushPackage do
     it 'should return the file handle' do
       file = push_package.save(output_path)
       file.must_be_instance_of File
-      File.exists?(file.path).must_equal true
+      File.exist?(file.path).must_equal true
     end
 
     it 'should be a zip file' do
