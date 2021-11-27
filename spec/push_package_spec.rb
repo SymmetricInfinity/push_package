@@ -29,13 +29,13 @@ describe PushPackage do
 
   let(:expected_manifest) do
     {
-      'icon.iconset/icon_128x128.png' => '28969578f1788252807a7d8205db269cb7699fa8',
-      'icon.iconset/icon_128x128@2x.png' => 'dd2bf0e3cb998467b0e5f5ae11675a454ad77601',
-      'icon.iconset/icon_16x16.png' => '48e791d0c88b92fae51ffa8363821857210fca01',
-      'icon.iconset/icon_16x16@2x.png' => '5a74d295cc09ca5896a4ceb7cac0d030cc85e894',
-      'icon.iconset/icon_32x32.png' => '8c71bc22f4cfe12ad98aabe94da6a70fe9f15741',
-      'icon.iconset/icon_32x32@2x.png' => '750e080d38efe1c227b2498f73f006007f3da24b',
-      'website.json' => '3eaed6475443b895a49e3a1220e547f2be90434a'
+      "icon.iconset/icon_128x128.png" => {"hashType"=>"sha512", "hashValue"=>"2a3057b4783df18ddb501adf03241ee6d32e5d3ae1eef3b1bc67f68a40ca2f9c4c3851b5c4473628964b8097e3c8aa6a0a552b78e39200bed0e3a6f9ad5245d8"},
+      "icon.iconset/icon_128x128@2x.png" => {"hashType"=>"sha512", "hashValue"=>"2f18bb895a031c40ff731296656c3544c9631074f4b34fb537ebda765e5a993cadf2e3f1c4245480a7403b7f00d8a0af73631a90e8f9b1efc18bd0e3f0773490"},
+      "icon.iconset/icon_16x16.png" => {"hashType"=>"sha512", "hashValue"=>"80cb914ccb155986b1306586f0779d251f4798605f1fc7ff79355b34bded1e55676c62553ebce51e1f2df82cac6fd138828106868bbdc6f631bc6b32e9ea3817"},
+      "icon.iconset/icon_16x16@2x.png" => {"hashType"=>"sha512", "hashValue"=>"39737919fdfa0375272e9c173a240fd3f68a8fe7798946dd379a83e76aed1b7f0d92b087497f85e50f5836b03062ecb47b00f7c53d4c0b466da068a559d432b7"},
+      "icon.iconset/icon_32x32.png" => {"hashType"=>"sha512", "hashValue"=>"b4a48df25c8fe5881e356112e3aa22a8df8ed180a827bb85330cb73f2d9abc283630622efa4a5135dd84dc6bda2eefe2aa79bfb67a954a0cd0e45a5de58e0de1"},
+      "icon.iconset/icon_32x32@2x.png" => {"hashType"=>"sha512", "hashValue"=>"3dcad42ae5729b1aefb07f3dc0c501c32027a8482d5424648e67fe484fcdc0be60d69ed97915c2b4a08e286990f2ecc88c2603bb79f9a523cb448906c19eeee9"},
+      "website.json" => {"hashType"=>"sha512", "hashValue"=>"a9fe3fcc467aa08ad7871f6ddb399453c2d2f00890ba6177633c36dabcb9313d46f69a54679ca41a404ebc89e2532bbff088ee9a6e649c2b3d33b44d3d78ebfb"}
     }
   end
 
