@@ -114,7 +114,7 @@ class PushPackage
     def manifest_data
       manifest_keys = REQUIRED_ICONSET_FILES.map{|f| 'icon.iconset/' + f }
       manifest_keys << 'website.json'
-      manifest_values = manifest_keys.map {|file| Digest::SHA1.file(File.join(@working_dir, file)).hexdigest }
+      manifest_values = manifest_keys.map {|file| {"hashType" => "sha512", "hashValue" => Digest::SHA512.file(File.join(@working_dir, file)).hexdigest} }
       Hash[manifest_keys.zip(manifest_values)].to_json
     end
 
